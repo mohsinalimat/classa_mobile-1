@@ -108,10 +108,6 @@ def customer(**kwargs):
     #address.links = address_link
     address.insert()
 
-
-
-
-
     #customer =frappe.get_doc(kwargs['data'])
 
     #customer.insert()
@@ -129,38 +125,153 @@ def customer(**kwargs):
 
 @frappe.whitelist(allow_guest=True)
 def sales_order(**kwargs):
-    
-    sales_order =frappe.get_doc(kwargs['data'])
+    customer = frappe.get_doc("Customer", kwargs['data']['customer'])
+    if customer.tax_type == "Taxable":
+        sales_order = frappe.get_doc(kwargs['data'])
+        sales_order.customer_address_2 = sales_order.customer_address
+        sales_order.insert()
+        sales_order.save()
+        sales_order_name = sales_order.name
+        frappe.db.commit()
+        if (sales_order_name):
+            message = frappe.response["message"] = {
+                "success_key": True,
+                "message": "تم اضافة المعاملة بنجاح!",
+                "sales_order": sales_order_name
+            }
+            return message
+        else:
+            return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
 
-    sales_order.insert()
-    sales_order_name = sales_order.name
-    frappe.db.commit()
-    if (sales_order_name):
-        message = frappe.response["message"] = {
-            "success_key": True,
-            "message": "تم اضافة المعاملة بنجاح!",
-            "sales_order": sales_order_name
-        }
-        return message
-    else:
-        return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
+    elif customer.tax_type == "Commercial":
+
+        sales_order = frappe.get_doc({
+        "doctype": "Sales Order",
+        "customer": kwargs['data']['customer'],
+        "customer_name": kwargs['data']['customer_name'],
+        "transaction_date": kwargs['data']['transaction_date'],
+        "delivery_date":  kwargs['data']['delivery_date'],
+        "customer_group": kwargs['data']['customer_group'],
+        "territory": kwargs['data']['territory'],
+        "customer_address": kwargs['data']['customer_address'],
+        "customer_address_2": kwargs['data']['customer_address'],
+        "project": kwargs['data']['project'],
+        "order_type":  kwargs['data']['order_type'],
+        "currency": kwargs['data']['currency'],
+        "conversion_rate": kwargs['data']['conversion_rate'],
+        "selling_price_list": kwargs['data']['selling_price_list'],
+        "price_list_currency": kwargs['data']['price_list_currency'],
+        "plc_conversion_rate": kwargs['data']['plc_conversion_rate'],
+        "set_warehouse": kwargs['data']['set_warehouse'],
+        "tc_name": kwargs['data']['tc_name'],
+        #"terms": kwargs['data']['terms'],
+        "payment_terms_template": kwargs['data']['payment_terms_template'],
+        #"apply_discount_on": "On Net Total" ,
+        #"additional_discount_percentage": 0 ,
+        #"discount_amount": 0,
+        "sales_partner": "ahmed",
+        "items": kwargs['data']['items']
+    })
+
+        sales_order.insert()
+        sales_order.save()
+        sales_order_name = sales_order.name
+        frappe.db.commit()
+        if (sales_order_name):
+            message = frappe.response["message"] = {
+                "success_key": True,
+                "message": "تم اضافة المعاملة بنجاح!",
+                "sales_order": sales_order_name
+            }
+            return message
+        else:
+            return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
+
+
 
 @frappe.whitelist(allow_guest=True)
 def sales_invoice(**kwargs):
-    sales_invoice =frappe.get_doc(kwargs['data'])
+    customer = frappe.get_doc("Customer", kwargs['data']['customer'])
+    if customer.tax_type == "Taxable":
+        sales_invoice = frappe.get_doc(kwargs['data'])
+        sales_invoice.naming_series = "INV-"
+        sales_invoice.insert()
+        sales_invoice_name = sales_invoice.name
+        frappe.db.commit()
+        if (sales_invoice_name):
+            message = frappe.response["message"] = {
+                "success_key": True,
+                "message": "تم اضافة المعاملة بنجاح!",
+                "sales_invoice": sales_invoice_name
+            }
+            return message
+        else:
+            return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
 
-    sales_invoice.insert()
-    sales_invoice_name = sales_invoice.name
-    frappe.db.commit()
-    if (sales_invoice_name):
-        message = frappe.response["message"] = {
-            "success_key": True,
-            "message": "تم اضافة المعاملة بنجاح!",
-            "sales_invoice": sales_invoice_name
-        }
-        return message
-    else:
-        return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
+    elif customer.tax_type == "Commercial":
+        sales_invoice = frappe.get_doc(kwargs['data'])
+        sales_invoice.naming_series = "SINV-"
+        sales_invoice.insert()
+        sales_invoice_name = sales_invoice.name
+        frappe.db.commit()
+        if (sales_invoice_name):
+            message = frappe.response["message"] = {
+                "success_key": True,
+                "message": "تم اضافة المعاملة بنجاح!",
+                "sales_invoice": sales_invoice_name
+            }
+            return message
+        else:
+            return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
+
+    '''
+        sales_invoice = frappe.get_doc({
+            "doctype": "Sales Invoice",
+            "naming_series": "SINV-",
+            "customer": kwargs['data']['customer'],
+            "customer_name": kwargs['data']['customer_name'],
+            "posting_date": kwargs['data']['posting_date'],
+            "due_date": kwargs['data']['due_date'],
+            "tax_id": kwargs['data']['tax_id'],
+            "customer_group": kwargs['data']['customer_group'],
+            "territory": kwargs['data']['territory'],
+            "customer_address": kwargs['data']['customer_address'],
+            "contact_person": kwargs['data']['contact_person'],
+            "is_return": kwargs['data']['is_return'],
+            "cost_center": kwargs['data']['cost_center'],
+            # "project": kwargs['data']['project'],
+            "currency": kwargs['data']['currency'],
+            "conversion_rate": kwargs['data']['conversion_rate'],
+            "selling_price_list": kwargs['data']['selling_price_list'],
+            "price_list_currency": kwargs['data']['price_list_currency'],
+            "plc_conversion_rate": kwargs['data']['plc_conversion_rate'],
+            "update_stock": kwargs['data']['update_stock'],
+            "set_warehouse": kwargs['data']['set_warehouse'],
+            "tc_name": kwargs['data']['tc_name'],
+            # "terms": kwargs['data']['terms'],
+            "payment_terms_template": kwargs['data']['payment_terms_template'],
+            # "apply_discount_on": "On Net Total" ,
+            # "additional_discount_percentage": 0 ,
+            # "discount_amount": 0,
+            "sales_partner": "ahmed",
+            "items": kwargs['data']['items']
+        })
+
+        sales_invoice.insert()
+        sales_invoice.save()
+        sales_invoice_name = sales_invoice.name
+        frappe.db.commit()
+        if (sales_invoice_name):
+            message = frappe.response["message"] = {
+                "success_key": True,
+                "message": "تم اضافة المعاملة بنجاح!",
+                "sales_order": sales_invoice_name
+            }
+            return message
+        else:
+            return "حدث خطأ ولم نتمكن من اضافة المعاملة . برجاء المحاولة مرة اخري!"
+    '''
+
 
 @frappe.whitelist(allow_guest=True)
 def payment_entry(**kwargs):
