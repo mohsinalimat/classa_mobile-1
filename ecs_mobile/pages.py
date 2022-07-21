@@ -460,9 +460,16 @@ def quotation(name):
 @frappe.whitelist()
 def customer(name):
     cust = {}
-    balance = get_balance_on(account=None, date=getdate(nowdate()), party_type='Customer', party=name, company=None,
-                             in_account_currency=True, cost_center=None, ignore_account_permission=False)
-    cust['balance'] = balance
+
+    customer_group = frappe.db.get_value("Customer", name, "customer_group")
+    parent_group = frappe.db.get_value("Customer Group", customer_group, "parent_customer_group")
+    if customer_group == "مجموعة التجزئة" or parent_group == "مجموعة التجزئة":
+        cust['balance'] = float(0)
+    else:
+        cust['balance'] = get_balance_on(account=None, date=getdate(nowdate()), party_type='Customer', party=name, company=None, in_account_currency=True, cost_center=None, ignore_account_permission=False)
+
+    #balance = get_balance_on(account=None, date=getdate(nowdate()), party_type='Customer', party=name, company=None, in_account_currency=True, cost_center=None, ignore_account_permission=False)
+    #cust['balance'] = balance
     doc_data = frappe.db.get_list('Customer', filters={'name': name},
                                   fields=['name',
                                           'customer_name',
@@ -1099,11 +1106,8 @@ def sales_invoice(name):
 
     sinv['comments'] = comments
 
-    print_formats = frappe.db.sql(""" Select name from `tabPrint Format` where doc_type = "Sales Invoice" and disabled = 0 """, as_dict=1)
+    print_formats = frappe.db.sql(""" Select name from `tabPrint Format` where name = "POS" and doc_type = "Sales Invoice" and disabled = 0 """, as_dict=1)
     sinv['print_formats'] = print_formats
-    pf_standard = {}
-    pf_standard['name'] = "Standard"
-    print_formats.append(pf_standard)
 
     sales_order = frappe.db.get_list('Sales Invoice Item', filters={'parent': name}, fields=['sales_order'], group_by='sales_order')
     delivery_note = frappe.db.get_list('Delivery Note Item', filters={'against_sales_invoice': name}, fields=['parent'], group_by='parent')
@@ -1202,11 +1206,9 @@ def payment_entry(name):
     pe['comments'] = comments
 
     print_formats = frappe.db.sql(
-        """ Select name from `tabPrint Format` where doc_type = "Payment Entry" and disabled = 0 """, as_dict=1)
+        """ Select name from `tabPrint Format` where name = "POS." and doc_type = "Payment Entry" and disabled = 0 """, as_dict=1)
     pe['print_formats'] = print_formats
-    pf_standard = {}
-    pf_standard['name'] = "Standard"
-    print_formats.append(pf_standard)
+
 
     if doc_data:
         return pe
