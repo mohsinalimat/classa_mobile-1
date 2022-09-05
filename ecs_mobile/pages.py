@@ -1239,10 +1239,10 @@ def item(name):
                                           ])
     for x in doc_data:
         item_['name'] = x.name
-        item_['image'] = x.image
-        item_['item_name'] = x.item_name
         item_['item_code'] = x.item_code
+        item_['item_name'] = x.item_name
         item_['disabled'] = x.disabled
+        item_['image'] = x.image
         item_['item_group'] = x.item_group
         item_['brand'] = x.brand
         item_['stock_uom'] = x.stock_uom
