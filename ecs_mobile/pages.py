@@ -899,7 +899,7 @@ def sales_order(name):
 @frappe.whitelist()
 def sales_invoice(name):
     sinv = {}
-    doc_data = frappe.db.get_list('Sales Invoice', filters={'name': name},
+    doc_data = frappe.db.get_all('Sales Invoice', filters={'name': name},
                                   fields=['name',
                                           'customer',
                                           'customer_name',
