@@ -470,7 +470,7 @@ def customer(name):
 
     #balance = get_balance_on(account=None, date=getdate(nowdate()), party_type='Customer', party=name, company=None, in_account_currency=True, cost_center=None, ignore_account_permission=False)
     #cust['balance'] = balance
-    doc_data = frappe.db.get_list('Customer', filters={'name': name},
+    doc_data = frappe.db.get_all('Customer', filters={'name': name},
                                   fields=['name',
                                           'customer_name',
                                           'disabled',
@@ -508,7 +508,7 @@ def customer(name):
         cust['default_price_list'] = x.default_price_list
         cust['default_sales_partner'] = x.default_sales_partner
 
-    child_data = frappe.db.get_list('Customer Credit Limit', filters={'parent': name}, order_by='idx',
+    child_data = frappe.db.get_all('Customer Credit Limit', filters={'parent': name}, order_by='idx',
                                       fields=[
                                           'idx',
                                           'name',
