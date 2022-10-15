@@ -1469,7 +1469,7 @@ def general_service(doctype, filter1='%%', filter2='%%', filter3='%%', filter4='
 
 ########################### Filtered Address List & Search ############################
     if doctype == "Address" and con_doc == '%%':
-        addresses = frappe.db.get_list('Dynamic Link', filters={'link_name': cur_nam}, fields=['parent'])
+        addresses = frappe.db.get_all('Dynamic Link', filters={'link_name': cur_nam}, fields=['parent'])
         result = []
         for d in addresses:
             query = frappe.db.sql(""" select name as name ,
@@ -1500,7 +1500,7 @@ def general_service(doctype, filter1='%%', filter2='%%', filter3='%%', filter4='
 
 ########################### Filtered Contact List & Search ############################
     if doctype == "Contact" and con_doc == '%%':
-        contacts = frappe.db.get_list('Dynamic Link', filters={'link_name': cur_nam}, fields=['parent'])
+        contacts = frappe.db.get_all('Dynamic Link', filters={'link_name': cur_nam}, fields=['parent'])
         result = []
         for d in contacts:
             query = frappe.db.sql(""" select name as name ,
