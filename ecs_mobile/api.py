@@ -186,7 +186,7 @@ def login(usr, pwd, url):
                 HR["docs"] = (docs)
                 modules.append(HR)
 
-         taxes = frappe.db.get_all('Sales Taxes and Charges', filters={'parent': "Default Tax Template", 'parenttype':'Sales Taxes and Charges Template'},
+        taxes = frappe.db.get_all('Sales Taxes and Charges', filters={'parent': "Default Tax Template", 'parenttype':'Sales Taxes and Charges Template'},
                                          fields=[
                                              'charge_type',
                                              'description',
